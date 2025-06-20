@@ -42,6 +42,6 @@ public class Player : MonoBehaviour
             amim.SetBool("run", false);//‰½‚à‰Ÿ‚µ‚Ä‚È‚¢‚Æ‚«
             xSpeed = 0.0f;
         }
-        rb.velocity = new Vector2(xSpeed,rb.velocity.y);
+        rb.velocity = new Vector2(xSpeed,0);
     }
 }
