@@ -6,13 +6,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     //インスペクターで設定可能にする
-    public float speed;//速度
-    public float gravity;//重力
-    public float jumpSpeed;//ジャンプ速度
-    public float jumpHeight;//ジャンプ高度
-    public float jumpLimitTime;//ジャンプ制限時間
-    public GroundCheck ground;//接地判定
-    public GroundCheck head;//頭ぶつけた判定
+    [Header("移動速度")] public float speed;
+    [Header("重力")] public float gravity;
+    [Header("ジャンプ速度")] public float jumpSpeed;
+    [Header("ジャンプ高度")] public float jumpHeight;
+    [Header("ジャンプ制限時間")] public float jumpLimitTime;
+    [Header("接地判定")] public GroundCheck ground;
+    [Header("頭ぶつけた判定")] public GroundCheck head;
 
     //プライベート変数
     private Animator anim = null;   
@@ -20,8 +20,12 @@ public class Player : MonoBehaviour
     private bool isGround = false;
     private bool isHead = false;
     private bool isJump = false;
+    private bool isRun = false;
+    private bool isHit = false;
     private float jumpPos = 0.0f;
     private float jumpTime = 0.0f;
+  
+    private string enemyTag = "Enemy";
     // Start is called before the first frame update
     void Start()
     {
@@ -33,21 +37,65 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //接地判定を得る
-        isGround = ground.IsGround();
-        isHead = head.IsGround();
-        //キー入力されたら行動する
-        float horizontalKey = Input.GetAxis("Horizontal");
-        float verticalKey = Input.GetAxis("Vertical");
-        float xSpeed = 0.0f;//移動速度
-        float ySpeed = -gravity ;
+        if (!isHit)
+        {
+            //接地判定を得る
+            isGround = ground.IsGround();
+            isHead = head.IsGround();
 
+            //各種座標の速度を求める   
+            float xSpeed = GetXSpeed();
+            float ySpeed = GetYSpeed();
+
+            //アニメーションを適用
+            SetAnimation();
+
+            //移動速度を設定   
+            rb.velocity = new Vector2(xSpeed, ySpeed);
+        }
+        else
+        {
+            rb.velocity = new Vector2(0, -gravity);
+        }
+    }
+
+    private float GetXSpeed()
+    {
+        float horizontalKey = Input.GetAxis("Horizontal");
+        float xSpeed = 0.0f;//移動速度
+
+        //移動時のみrunにする
+        if (horizontalKey > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);//右方向
+            anim.SetBool("run", true);
+            xSpeed = speed;
+        }
+        else if (horizontalKey < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);//左方向
+            anim.SetBool("run", true);
+            xSpeed = -speed;
+        }
+        else
+        {
+            anim.SetBool("run", false);//何も押してないとき
+            xSpeed = 0.0f;
+        }
+        return xSpeed;
+    }
+
+    private float GetYSpeed()
+    {
+        float verticalKey = Input.GetAxis("Vertical");
+        float ySpeed = -gravity;
         if (isGround)
         {
-            if(verticalKey > 0)
+            if (verticalKey > 0)
             {
                 ySpeed = jumpSpeed;
                 jumpPos = transform.position.y;//ジャンプした位置を記録
+               
                 isJump = true;
                 jumpTime = 0.0f;
             }
@@ -76,26 +124,22 @@ public class Player : MonoBehaviour
                 jumpTime = 0.0f;
             }
         }
-        //移動時のみrunにする
-        if (horizontalKey > 0)
-        {
-            transform.localScale = new Vector3(1,1,1);//右方向
-            anim.SetBool("run", true);
-            xSpeed = speed;
-        }
-        else if (horizontalKey < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);//左方向
-            anim.SetBool("run", true);
-            xSpeed = -speed;
-        }
-        else
-        {
-            anim.SetBool("run", false);//何も押してないとき
-            xSpeed = 0.0f;
-        }
+        return ySpeed;
+    }
+    private void SetAnimation()
+    {
         anim.SetBool("jump", isJump);
-        anim.SetBool("ground",isGround);
-        rb.velocity = new Vector2(xSpeed,ySpeed);
+        anim.SetBool("ground", isGround);
+        anim.SetBool("run", isRun);
+    }
+    //接触判定
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.collider.tag == enemyTag)
+        {
+            Debug.Log("敵と接触した");
+            anim.Play("New Animation_hit");
+            isHit = true;
+        }
     }
 }
