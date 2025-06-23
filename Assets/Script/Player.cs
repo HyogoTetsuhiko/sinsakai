@@ -159,6 +159,15 @@ public class Player : MonoBehaviour
         anim.SetBool("ground", isGround);
         anim.SetBool("run", isRun);
     }
+    //ダウンアニメーションが完了しているかどうか
+    private bool IsHitAnimEnd()
+    {
+        if(isHit && anim != null)
+        {
+            AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(0);
+        }
+        return false;
+    }
     //接触判定
     private void OnCollisionEnter2D(Collision2D collision)
     {
