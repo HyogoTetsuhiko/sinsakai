@@ -11593,6 +11593,7 @@ GameObject:
   - component: {fileID: 332407315}
   - component: {fileID: 332407314}
   - component: {fileID: 332407318}
+  - component: {fileID: 332407319}
   m_Layer: 0
   m_Name: slimer1
   m_TagString: Enemy
@@ -11733,7 +11734,7 @@ Transform:
   m_GameObject: {fileID: 332407313}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.73, y: -3.95, z: 0}
+  m_LocalPosition: {x: -6.625, y: -3.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11753,6 +11754,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boundHeight: 0.25
   playerStepOn: 0
+--- !u!114 &332407319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332407313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd5b6bd17dcab04c920a24fc4b31759, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 1.5
+  gravity: 2
+  nonVisible: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
