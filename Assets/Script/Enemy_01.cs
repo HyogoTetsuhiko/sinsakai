@@ -8,6 +8,7 @@ public class Enemy_01 : MonoBehaviour
     [Header("移動速度")] public float speed;
     [Header("重力")] public float gravity;
     [Header("画面外でも行動するか")] public bool nonVisible;
+    [Header("接触判定")]public EnemyCollisionCheck checkCollision;
 
     //プライベート変数
     private Rigidbody2D rb = null;
@@ -32,6 +33,10 @@ public class Enemy_01 : MonoBehaviour
         {
             if (sr.isVisible || nonVisible)
             {
+                if (checkCollision.isOn)
+                {
+                    rightTlefF = !rightTlefF;//左右反転
+                }
                 //行動する
                 int xVector = -1;
                 if (rightTlefF)
