@@ -11,18 +11,22 @@ public class Player : MonoBehaviour
     [Header("ジャンプ速度")] public float jumpSpeed;
     [Header("ジャンプ高度")] public float jumpHeight;
     [Header("ジャンプ制限時間")] public float jumpLimitTime;
+    [Header("踏み付け判定の高さの割合")] public float stepOnRate;
     [Header("接地判定")] public GroundCheck ground;
     [Header("頭ぶつけた判定")] public GroundCheck head;
 
     //プライベート変数
     private Animator anim = null;   
     private Rigidbody2D rb = null;
+    private CapsuleCollider2D capsule = null;
     private bool isGround = false;
     private bool isHead = false;
     private bool isJump = false;
     private bool isRun = false;
     private bool isHit = false;
+    private bool isOtherJump = false;
     private float jumpPos = 0.0f;
+    private float otherJumpHeight = 0.0f;
     private float jumpTime = 0.0f;
   
     private string enemyTag = "Enemy";
@@ -32,6 +36,7 @@ public class Player : MonoBehaviour
         //コンポーネントのインスタンスを取得
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        capsule = GetComponent<CapsuleCollider2D>();
     }
 
     // Update is called once per frame
@@ -89,7 +94,29 @@ public class Player : MonoBehaviour
     {
         float verticalKey = Input.GetAxis("Vertical");
         float ySpeed = -gravity;
-        if (isGround)
+        if (isOtherJump)
+        {
+            //上方向キーを押しているか
+            bool pushUpKey = verticalKey > 0;
+            //現在の高さが飛べる高さより下か
+            bool canHeight = jumpPos + otherJumpHeight > transform.position.y;
+            //ジャンプ時間が長くなりすぎていないか
+            bool canTime = jumpLimitTime > jumpTime;
+
+            if (canHeight && canTime && !isHead)
+            {
+                ySpeed = jumpSpeed;
+                //上昇している間に進んだゲーム内時間を足す
+                jumpTime += Time.deltaTime;//Time.deltaTimeはゲーム内時間を進める秒数
+            }
+            else
+            {
+                isOtherJump = false;
+                jumpTime = 0.0f;
+            }
+        }
+
+        else if (isGround)
         {
             if (verticalKey > 0)
             {
@@ -128,7 +155,7 @@ public class Player : MonoBehaviour
     }
     private void SetAnimation()
     {
-        anim.SetBool("jump", isJump);
+        anim.SetBool("jump", isJump || isOtherJump);
         anim.SetBool("ground", isGround);
         anim.SetBool("run", isRun);
     }
@@ -137,9 +164,37 @@ public class Player : MonoBehaviour
     {
         if(collision.collider.tag == enemyTag)
         {
+            //踏み付け判定になる高さ
+            float stepOnHeight = (capsule.size.y * (stepOnRate / 100f));
+
+            //踏み付け判定のワールド座標
+            float judgePos = transform.position.y - (capsule.size.y / 2f) + stepOnHeight;
+            foreach (ContactPoint2D p in collision.contacts)
+            { 
+                if(p.point.y < judgePos)//衝突した位置
+                {
+                    //もう一度跳ねる
+                    ObjectCollision o = collision.gameObject.GetComponent<ObjectCollision>(); 
+                    if(o != null)
+                    {
+                        otherJumpHeight = o.boundHeight;//踏んづけたものから跳ねる高さを取得する
+                        o.playerStepOn = true;//踏んづけたものに対して踏んづけたことを通知する
+                        jumpPos = transform.position.y;//ジャンプした位置を記録する
+                        isOtherJump = true;
+                        isJump = false;
+                        jumpTime = 0.0f;
+                    }
+                    
+                }
+                else
+                {
+                    //ダウンする
+                    anim.Play("New Animation_hit");
+                    isHit = true;
+                    break;
+                }
+            }
             Debug.Log("敵と接触した");
-            anim.Play("New Animation_hit");
-            isHit = true;
         }
     }
 }
