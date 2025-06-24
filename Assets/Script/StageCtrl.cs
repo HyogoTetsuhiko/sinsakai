@@ -5,14 +5,14 @@ using UnityEngine;
 public class StageCtrl : MonoBehaviour
 {
     [Header("プレイヤーゲームオブジェクト")] public GameObject playerObj;
-    [Header("コンティニュー位置")] public GameObject[] countinuePoint;
+    [Header("コンティニュー位置")] public GameObject[] continuePoint;
 
     private Player p;
     void Start()
     {
-        if(playerObj != null && countinuePoint != null && countinuePoint.Length > 0)
+        if(playerObj != null && continuePoint != null && continuePoint.Length > 0)
         {
-            playerObj.transform.position = countinuePoint[0].transform.position;
+            playerObj.transform.position = continuePoint[0].transform.position;
 
             p = playerObj.GetComponent<Player>();
             if( p == null )
@@ -25,6 +25,17 @@ public class StageCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(p != null && p.IsCountinueWaiting())
+        {
+            if (continuePoint.Length > GameManager.instance.continueNum)
+            {
+                playerObj.transform.position = continuePoint[GameManager.instance.continueNum].transform.position;
+                p.ContinuePlayer();
+            }
+            else
+            {
+                Debug.Log("コンティニューポイントの設定が足りない");
+            }
+        } 
     }
 }

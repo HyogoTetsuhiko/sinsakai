@@ -19,12 +19,16 @@ public class Player : MonoBehaviour
     private Animator anim = null;   
     private Rigidbody2D rb = null;
     private CapsuleCollider2D capsule = null;
+    private SpriteRenderer sr = null;
     private bool isGround = false;
     private bool isHead = false;
     private bool isJump = false;
     private bool isRun = false;
     private bool isHit = false;
     private bool isOtherJump = false;
+    private bool isContinue = false;
+    private float continueTime = 0.0f;
+    private float breakTime = 0.0f;
     private float jumpPos = 0.0f;
     private float otherJumpHeight = 0.0f;
     private float jumpTime = 0.0f;
@@ -37,9 +41,42 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         capsule = GetComponent<CapsuleCollider2D>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
+    private void Update()
+    {
+        //敵に触れたら1秒間プレイヤーを点滅させる
+        if (isContinue)
+        {
+            if(breakTime > 0.2f)
+            {
+                sr.enabled = true;
+                breakTime = 0.0f;
+            }
+            else if (breakTime > 0.1f)
+            {
+                sr.enabled = false;
+            }
+            else
+            {
+                sr.enabled = true;
+            }
+            //1秒経ったら点滅終わる
+            if(continueTime > 1.0f)
+            {
+                isContinue = false;
+                breakTime = 0.0f;
+                continueTime = 0.0f;
+                sr.enabled = true;
+            }
+            else
+            {
+                breakTime += Time.deltaTime;
+                continueTime += Time.deltaTime;
+            }
+        }
+    }
     void FixedUpdate()
     {
         if (!isHit)
@@ -159,14 +196,35 @@ public class Player : MonoBehaviour
         anim.SetBool("ground", isGround);
         anim.SetBool("run", isRun);
     }
+    //コンティニュー待機状態か
+    public bool IsCountinueWaiting()
+    {
+        return IsHitAnimEnd();
+    }
     //ダウンアニメーションが完了しているかどうか
     private bool IsHitAnimEnd()
     {
         if(isHit && anim != null)
         {
             AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(0);
+            if(currentState.IsName("New Animation_hit"))
+            {
+                if(currentState.normalizedTime >= 1)
+                {
+                    return true;
+                }
+            }
         }
         return false;
+    }
+    public void ContinuePlayer()
+    {
+        isHit = false;
+        anim.Play("New Animation_stay");
+        isJump = false;
+        isOtherJump = false;
+        isRun = false;
+        isContinue = true;
     }
     //接触判定
     private void OnCollisionEnter2D(Collision2D collision)
