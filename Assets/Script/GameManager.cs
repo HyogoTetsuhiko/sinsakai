@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        // タイトル画面だったら状態初期化
+        // タイトル画面に戻ったら状態初期化
         if (SceneManager.GetActiveScene().name == "TitleScene")
         {
             ResetGameState();
@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // タイトルに戻るとき用：状態リセットだけ（シーン切り替えは別で）
+    // タイトルに戻るとき状態リセット
     public void ResetGameState()
     {
         isGameOver = false;

@@ -117,20 +117,23 @@ public class Player : MonoBehaviour
         if (horizontalKey > 0)
         {
             transform.localScale = new Vector3(1, 1, 1);//右方向
-            anim.SetBool("run", true);
             xSpeed = speed;
         }
         else if (horizontalKey < 0)
         {
             transform.localScale = new Vector3(-1, 1, 1);//左方向
-            anim.SetBool("run", true);
             xSpeed = -speed;
         }
         else
         {
-            anim.SetBool("run", false);//何も押してないとき
             xSpeed = 0.0f;
         }
+        //移動している場合runのアニメーションに切り替える
+        bool shouldRun = horizontalKey != 0;
+        if(anim.GetBool("run")!= shouldRun)
+        {
+            anim.SetBool("run", shouldRun);
+        } 
         return xSpeed;
     }
 
@@ -201,7 +204,6 @@ public class Player : MonoBehaviour
     {
         anim.SetBool("jump", isJump || isOtherJump);
         anim.SetBool("ground", isGround);
-        anim.SetBool("run", isRun);
     }
     //コンティニュー待機状態か
     public bool IsCountinueWaiting()
