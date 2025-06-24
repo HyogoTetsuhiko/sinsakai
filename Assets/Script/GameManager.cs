@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
-    [Header("現在の残機")]public int heartNum;
-    [Header("現在の復帰位置")]public int continueNum;
+
+    [Header("現在のステージ")] public int stageNum;
+    [Header("現在の残機")] public int heartNum;
+    [Header("現在の復帰位置")] public int continueNum;
     [Header("デフォルトの残機")] public int defaultHeartNum;
+
     [HideInInspector] public bool isGameOver;
     [HideInInspector] public bool isStageClear;
 
@@ -17,13 +21,22 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(this.gameObject);
+
+            defaultHeartNum = 3;
         }
         else
         {
             Destroy(this.gameObject);
         }
+
+        // タイトル画面だったら状態初期化
+        if (SceneManager.GetActiveScene().name == "TitleScene")
+        {
+            ResetGameState();
+        }
     }
-    //残機を減らす
+
+    // 残機を減らす
     public void SubHeartNum()
     {
         if (heartNum > 0)
@@ -35,11 +48,14 @@ public class GameManager : MonoBehaviour
             isGameOver = true;
         }
     }
-    public void RetryGame()
+
+    // タイトルに戻るとき用：状態リセットだけ（シーン切り替えは別で）
+    public void ResetGameState()
     {
         isGameOver = false;
+        isStageClear = false;
         heartNum = defaultHeartNum;
         continueNum = 0;
+        stageNum = 1;
     }
-
 }

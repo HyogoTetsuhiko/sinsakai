@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - DeadArea
   - Clear
+  - Wall
   layers:
   - Default
   - TransparentFX

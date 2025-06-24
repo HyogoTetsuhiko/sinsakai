@@ -6,7 +6,7 @@ public class EnemyCollisionCheck : MonoBehaviour
 {
     [HideInInspector]public bool isOn = false;
 
-    private string groundTag = "Ground";
+    private string groundTag = "Wall";
     private string enemyTag = "Enemy";
 
     private void OnTriggerEnter2D(Collider2D collision)
