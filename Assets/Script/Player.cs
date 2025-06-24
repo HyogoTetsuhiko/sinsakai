@@ -258,6 +258,7 @@ public class Player : MonoBehaviour
                     //ƒ_ƒEƒ“‚·‚é
                     anim.Play("New Animation_hit");
                     isHit = true;
+                    GameManager.instance.SubHeartNum();
                     break;
                 }
             }

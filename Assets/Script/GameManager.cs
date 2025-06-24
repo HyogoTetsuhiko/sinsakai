@@ -5,9 +5,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
-    public int heartNum;
-    public int continueNum;
-
+    [Header("現在の残機")]public int heartNum;
+    [Header("現在の復帰位置")]public int continueNum;
+    [Header("デフォルトの残機")] public int defaultHeartNum;
     [HideInInspector] public bool isGameOver;
 
     private void Awake()
@@ -20,6 +20,18 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(this.gameObject);
+        }
+    }
+    //残機を減らす
+    public void SubHeartNum()
+    {
+        if (heartNum > 0)
+        {
+            --heartNum;
+        }
+        else
+        {
+            isGameOver = true;
         }
     }
 }
