@@ -7,17 +7,19 @@ public class StageCtrl : MonoBehaviour
     [Header("プレイヤーゲームオブジェクト")] public GameObject playerObj;
     [Header("コンティニュー位置")] public GameObject[] continuePoint;
     [Header("ゲームオーバー")] public GameObject gameOverObj;
+    [Header("ステージクリア")]public GameObject StageClearObj;
+    [Header("ステージクリア判定")]public PlayerTriggerCheck stageClearTrigger;
      
     private Player p;
-    private bool startFade = false;
     private bool doGameOver = false;
     private bool retryGame = false;
-    private bool doSceneChange  = false;
+    private bool doClear = false;
     void Start()
     {
         if(playerObj != null && continuePoint != null && continuePoint.Length > 0 && gameOverObj != null)
         {
             gameOverObj.SetActive(false);
+            StageClearObj.SetActive(false);
             playerObj.transform.position = continuePoint[0].transform.position;
 
             p = playerObj.GetComponent<Player>();
@@ -50,9 +52,20 @@ public class StageCtrl : MonoBehaviour
                 Debug.Log("コンティニューポイントの設定が足りない");
             }
         } 
+        else if(stageClearTrigger != null && stageClearTrigger.isOn && !doGameOver && !doClear)
+        {
+            StageClear();
+            doClear = true;
+        }
     }
     public void Retry()
     {
         retryGame = true;
+    }
+
+    public void StageClear()
+    {
+        GameManager.instance.isStageClear = true;
+        StageClearObj.SetActive(true);
     }
 }

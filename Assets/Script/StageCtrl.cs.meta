@@ -3,7 +3,11 @@ guid: 24208f27c3ea37c4283ebcb2e94cb61f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - playerObj: {instanceID: 0}
+  - gameOverObj: {instanceID: 0}
+  - StageClearObj: {instanceID: 0}
+  - stageClearTrigger: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

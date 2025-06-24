@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [Header("現在の復帰位置")]public int continueNum;
     [Header("デフォルトの残機")] public int defaultHeartNum;
     [HideInInspector] public bool isGameOver;
+    [HideInInspector] public bool isStageClear;
 
     private void Awake()
     {
@@ -40,4 +41,5 @@ public class GameManager : MonoBehaviour
         heartNum = defaultHeartNum;
         continueNum = 0;
     }
+
 }

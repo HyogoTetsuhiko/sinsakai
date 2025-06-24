@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
   
     private string enemyTag = "Enemy";
     private string deadAreaTag = "DeadArea";
+    private string clearTag = "Clear";
     // Start is called before the first frame update
     void Start()
     {
@@ -81,7 +82,7 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (!isHit)
+        if (!isHit && !GameManager.instance.isGameOver && !GameManager.instance.isStageClear)
         {
             //ê⁄ínîªíËÇìæÇÈ
             isGround = ground.IsGround();
@@ -99,6 +100,10 @@ public class Player : MonoBehaviour
         }
         else
         {
+            if (GameManager.instance.isStageClear)
+            {
+                anim.Play("New Animation_stay");
+            }
             rb.velocity = new Vector2(0, -gravity);
         }
     }
@@ -240,7 +245,7 @@ public class Player : MonoBehaviour
 
     private void ReceiveDamage(bool hitAnim)
     {
-        if (isHit)
+        if (isHit || GameManager.instance.isStageClear)
         {
             return;
         }
@@ -298,9 +303,17 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if(GameManager.instance.isStageClear || GameManager.instance.isGameOver)
+        {
+            return;
+        }
         if(collision.tag == deadAreaTag)
         {
             ReceiveDamage(false);
+        }
+        else if (collision.tag == clearTag)
+        {
+            GameManager.instance.isStageClear = true;
         }
     }
 }
