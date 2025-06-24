@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     private bool isHit = false;
     private bool isOtherJump = false;
     private bool isContinue = false;
+    private bool nonHitAnim = false;
     private float continueTime = 0.0f;
     private float breakTime = 0.0f;
     private float jumpPos = 0.0f;
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour
     private float jumpTime = 0.0f;
   
     private string enemyTag = "Enemy";
+    private string deadAreaTag = "DeadArea";
     // Start is called before the first frame update
     void Start()
     {
@@ -199,7 +201,14 @@ public class Player : MonoBehaviour
     //コンティニュー待機状態か
     public bool IsCountinueWaiting()
     {
-        return IsHitAnimEnd();
+        if (GameManager.instance.isGameOver)
+        {
+            return false;
+        }
+        else
+        {
+            return IsHitAnimEnd() || nonHitAnim;
+        }
     }
     //ダウンアニメーションが完了しているかどうか
     private bool IsHitAnimEnd()
@@ -217,6 +226,7 @@ public class Player : MonoBehaviour
         }
         return false;
     }
+    //コンティニューする
     public void ContinuePlayer()
     {
         isHit = false;
@@ -225,6 +235,29 @@ public class Player : MonoBehaviour
         isOtherJump = false;
         isRun = false;
         isContinue = true;
+        nonHitAnim = false;
+    }
+
+    private void ReceiveDamage(bool hitAnim)
+    {
+        if (isHit)
+        {
+            return;
+        }
+        else
+        {
+            if(hitAnim)
+            {
+                anim.Play("New Animation_hit");
+            }
+            else
+            {
+                nonHitAnim = true;
+            }
+            anim.Play("New Animation_hit");
+            isHit = true;
+            GameManager.instance.SubHeartNum();
+        }
     }
     //接触判定
     private void OnCollisionEnter2D(Collision2D collision)
@@ -256,13 +289,20 @@ public class Player : MonoBehaviour
                 else
                 {
                     //ダウンする
-                    anim.Play("New Animation_hit");
-                    isHit = true;
-                    GameManager.instance.SubHeartNum();
+                    ReceiveDamage(true);
                     break;
                 }
             }
             Debug.Log("敵と接触した");
         }
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == deadAreaTag)
+        {
+            ReceiveDamage(false);
+        }
+    }
 }
+
+
