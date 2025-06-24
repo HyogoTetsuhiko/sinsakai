@@ -34,4 +34,10 @@ public class GameManager : MonoBehaviour
             isGameOver = true;
         }
     }
+    public void RetryGame()
+    {
+        isGameOver = false;
+        heartNum = defaultHeartNum;
+        continueNum = 0;
+    }
 }
